@@ -15,7 +15,6 @@
 #include <OneWire.h> 
 #include <DallasTemperature.h>
 #include <Arduino.h>
-#include <IRremoteESP8266.h>
 #include <IRsend.h>
 #include <ESP8266WiFi.h>
 #include <Espalexa.h>
