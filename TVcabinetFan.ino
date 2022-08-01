@@ -43,6 +43,7 @@
 #define AMP_DISK          0x010E0BF4
 #define PROJECTOR_POWER   0xC1AA09F6
 #define AMP_MUTE          0x010E837C
+#define YES_POWER         0x213C847B
 /////////////////////////////////////////////////////////////////////////
 // Globals
 /////////////////////////////////////////////////////////////////////////
@@ -69,6 +70,9 @@ void ampMHL(uint8_t onState); String ampMHLName = "Tv";
 void ampBluetooth(uint8_t onState); String ampBluetoothName = "Music";
 void ampDisk(uint8_t onState); String ampDiskName = "Disk";
 void ampMute(uint8_t onState); String ampMuteName = "Mute";
+void yesPower(uint8_t onState); String yesPowerName = "Yes";
+void projectorPower(uint8_t onState); String projectorName = "Projector";
+
 /////////////////////////////////////////////////////////////////////////
 // Function definitions
 /////////////////////////////////////////////////////////////////////////
@@ -92,9 +96,26 @@ void initEspAlexa(){
     espalexa.addDevice(ampBluetoothName, ampBluetooth);
     espalexa.addDevice(ampDiskName, ampDisk);
     espalexa.addDevice(ampMuteName, ampMute);
-   
+    espalexa.addDevice(yesPowerName, yesPower);
+    espalexa.addDevice(projectorName, projectorPower);   
     espalexa.begin();
   }
+}
+void yesPower(uint8_t dummy){
+  irSend->sendNEC(YES_POWER, 32, 3);
+  Serial.println("Mute!");
+  delay(100);
+}
+void projectorPower(uint8_t onState){
+  if(onState){
+    irSend->sendNEC(PROJECTOR_POWER, 32, 3);
+  } else{
+    irSend->sendNEC(YES_POWER, 32, 3);
+    delay(1000);
+    irSend->sendNEC(YES_POWER, 32, 3);
+  }
+  Serial.println("projector!");
+  delay(100);
 }
 void ampMute(uint8_t dummy){
   irSend->sendNEC(AMP_MUTE, 32, 3);
