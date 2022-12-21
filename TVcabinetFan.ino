@@ -49,8 +49,8 @@
 /////////////////////////////////////////////////////////////////////////
 uint64_t FANdt = 0;
 
-const char* ssid     = "Shimmy";         // The SSID (name) of the Wi-Fi network you want to connect to
-const char* password = "alma2020";     // The password of the Wi-Fi network
+const char* ssid     = "SSID_name";         // The SSID (name) of the Wi-Fi network you want to connect to
+const char* password = "password";     // The password of the Wi-Fi network
 
 IRsend* irSend;
 OneWire oneWire(BS18B20);
@@ -101,18 +101,21 @@ void initEspAlexa(){
     espalexa.begin();
   }
 }
+// Yes - on\ off is the same remote code
 void yesPower(uint8_t dummy){
   irSend->sendNEC(YES_POWER, 32, 3);
-  Serial.println("Mute!");
+  Serial.println("Yes!");
   delay(100);
 }
+// Projector on with one press
+//           off with two
 void projectorPower(uint8_t onState){
   if(onState){
     irSend->sendNEC(PROJECTOR_POWER, 32, 3);
   } else{
-    irSend->sendNEC(YES_POWER, 32, 3);
+    irSend->sendNEC(PROJECTOR_POWER, 32, 3);
     delay(1000);
-    irSend->sendNEC(YES_POWER, 32, 3);
+    irSend->sendNEC(PROJECTOR_POWER, 32, 3);
   }
   Serial.println("projector!");
   delay(100);
@@ -122,11 +125,15 @@ void ampMute(uint8_t dummy){
   Serial.println("Mute!");
   delay(100);
 }
+// Amp input - Disk
 void ampDisk(uint8_t dummy){
   irSend->sendNEC(AMP_DISK, 32, 3);
   Serial.println("Disk in!");
   delay(100);
 }
+// Amp input - Bluetooth
+// Not straight forward, no remote direct button, 
+// operate through amp menu
 void ampBluetooth(uint8_t dummy){
   irSend->sendNEC(AMP_OSD_MENU, 32, 3);
   delay(SEC);
@@ -137,12 +144,13 @@ void ampBluetooth(uint8_t dummy){
   irSend->sendNEC(AMP_OK, 32, 3);
   Serial.println("Bluetooth in!");
 }
+// Amp input - MHL
 void ampMHL(uint8_t dummy){
   irSend->sendNEC(AMP_MHL, 32, 3);
   Serial.println("MHL in!");
   delay(100);
 }
-
+// Amp power - two different buttons for on/ off
 void ampPower(uint8_t onState){
   if(onState){
     irSend->sendNEC(AMP_ON, 32, 3);
@@ -153,14 +161,15 @@ void ampPower(uint8_t onState){
   }
   delay(100);
 }
-
+// Set GPIO for fan output, init sensor
 void initFan(){
   pinMode(FAN, OUTPUT);
   digitalWrite(FAN, LOW);
   sensors.begin();
   Serial.println("Start\n");
 }
-
+// Check cabinet temperature once in a TEMP_CHECK_SEC interval
+// start/ stop fan by temperature ranges - START_FAN_ABOVE, STOP_FAN_BELOW
 void handleFan(){
   if( (millis() - FANdt) > TEMP_CHECK_SEC){
     FANdt = millis();
@@ -178,6 +187,7 @@ void handleFan(){
     Serial.println(temperature);
   }
 }
+
 void initIR(){
   irSend = new IRsend(IR_LED, true);
   irSend->begin();
