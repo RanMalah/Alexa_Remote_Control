@@ -106,6 +106,8 @@ void yesPower(uint8_t dummy){
   irSend->sendNEC(YES_POWER, 32, 3);
   Serial.println("Yes!");
   delay(100);
+  irSend->sendNEC(YES_POWER, 32, 3);
+  delay(100);
 }
 // Projector on with one press
 //           off with two
@@ -113,8 +115,6 @@ void projectorPower(uint8_t onState){
   if(onState){
     irSend->sendNEC(PROJECTOR_POWER, 32, 3);
   } else{
-    irSend->sendNEC(PROJECTOR_POWER, 32, 3);
-    delay(1000);
     irSend->sendNEC(PROJECTOR_POWER, 32, 3);
   }
   Serial.println("projector!");
@@ -154,8 +154,12 @@ void ampMHL(uint8_t dummy){
 void ampPower(uint8_t onState){
   if(onState){
     irSend->sendNEC(AMP_ON, 32, 3);
+    delay(100);
+    irSend->sendNEC(AMP_ON, 32, 3);
     Serial.println("Amp On!");
   } else{
+    irSend->sendNEC(AMP_OFF, 32, 3);
+    delay(100);
     irSend->sendNEC(AMP_OFF, 32, 3);
     Serial.println("Amp Off!");
   }
